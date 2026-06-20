@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Traffic Management System</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            text-align: center;
+            padding: 40px;
+        }
+        h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .traffic-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            justify-content: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+        button {
+            margin-top: 20px;
+            background-color: #00ff99;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: #000;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #00cc77;
+        }
+        .signal {
+            margin-top: 20px;
+        }
+        .green { color: #00ff00; font-weight: bold; }
+        .red { color: #ff0000; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>🚦 Smart Traffic Management System</h1>
+    <p>Automatic signal control based on real-time traffic density</p>
+
+    <div class="traffic-container" id="trafficData">
+        <div class="box">North: <span id="North">0</span></div>
+        <div class="box">South: <span id="South">0</span></div>
+        <div class="box">East: <span id="East">0</span></div>
+        <div class="box">West: <span id="West">0</span></div>
+    </div>
+
+    <button onclick="updateTraffic()">🔄 Update Traffic Data</button>
+    <button onclick="controlSignal()">🚦 Control Signals</button>
+
+    <div class="signal" id="signalStatus"></div>
+
+    <script>
+        function updateTraffic() {
+            fetch('/update_traffic', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                for (let key in data) {
+                    document.getElementById(key).textContent = data[key];
+                }
+                document.getElementById('signalStatus').innerHTML = "<p>✅ Traffic updated!</p>";
+            });
+        }
+
+        function controlSignal() {
+            fetch('/signal_control')
+            .then(response => response.json())
+            .then(data => {
+                let output = "<h2>Signal Status</h2>";
+                for (let dir in data) {
+                    let colorClass = data[dir] === "Green" ? "green" : "red";
+                    output += `<p>${dir}: <span class='${colorClass}'>${data[dir]}</span></p>`;
+                }
+                document.getElementById('signalStatus').innerHTML = output;
+            });
+        }
+    </script>
+</body>
+</html>
